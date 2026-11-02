@@ -3,8 +3,8 @@
 同学互动网站初稿 V0.2。小组网站名称与 Logo 均为暂定，可继续修改。
 
 - GitHub Pages：https://lucasli1337unknown.github.io/Journey-To-the-West-Chinese-Project/
-- Vercel 项目：xiyou-zaowu（部署状态以实际返回为准）
-- Netlify：已附 netlify.toml，需通过已登录账号导入此仓库。
+- Vercel 项目：xiyou-zaowu（部署状态以实际返回为准）https://xiyou-zaowu.vercel.app/
+- Netlify：已附 netlify.toml，需通过已登录账号导入此仓库。https://xiyou-zaowu.netlify.app/
 
 ## 已确认的资料
 
