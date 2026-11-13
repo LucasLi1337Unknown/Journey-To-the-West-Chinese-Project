@@ -1,6 +1,6 @@
 # 西游造物 ·《西游记》小组活动
 
-同学互动网站初稿 V0.2。小组网站名称与 Logo 均为暂定，可继续修改。
+同学互动网站最终作品，含有视频、介绍、3D建模设计和小组分工等内容。
 
 - GitHub Pages：https://lucasli1337unknown.github.io/Journey-To-the-West-Chinese-Project/
 - Vercel 项目：xiyou-zaowu（部署状态以实际返回为准）https://xiyou-zaowu.vercel.app/
