@@ -1,0 +1,31 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>西游造物｜纸条管理</title><link rel="stylesheet" href="style.css"></head><body><main class="wrap section"><section class="card"><h1>纸条管理</h1><button class="button primary" id="login" disabled>点击按钮</button> <button class="button outline" id="exit" hidden>退出登录</button><p id="status" role="status">正在连接…</p><div id="notes" class="message-wall"></div></section></main><script type="module">import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/+esm';
+const url='https://xiyou-zaowu.netlify.app/admin.html';
+const db=createClient('https://tunuexbkkakiawsyanqu.supabase.co','sb_publishable_3DoUzWc5ShX3MVVtTRiAvw_USCrJ88X',{auth:{flowType:'pkce',storage:sessionStorage,storageKey:'xiyou-admin'}});
+const el=id=>document.getElementById(id), login=el('login'), status=el('status'), exit=el('exit'), notes=el('notes');
+if(location.origin!==new URL(url).origin)location.replace(url);
+else {
+login.onclick=async()=>{login.disabled=true;try{const {error}=await db.auth.signInWithOAuth({provider:'github',options:{redirectTo:url}});if(error)throw error;}catch{status.textContent='无法打开 GitHub 登录，请重试。';login.disabled=false;}};
+exit.onclick=async()=>{const {error}=await db.auth.signOut({scope:'local'});if(error)status.textContent='退出失败，请重试。';else location.replace(url);};
+try{
+const {data:{session},error}=await db.auth.getSession();if(error)throw error;
+if(!session){status.textContent='请使用项目所有者的 GitHub 账号。';login.disabled=false;}
+else{
+exit.hidden=false;login.hidden=true;
+const {data:allowed,error}=await db.rpc('jtw_can_moderate');if(error)throw error;
+if(!allowed)status.textContent='此账号没有管理权限。';
+else{
+const {data,error}=await db.from('jtw_messages').select('id,nickname,content,created_at').order('created_at',{ascending:false}).limit(60);if(error)throw error;
+status.textContent='已进入管理页 · 最近 '+data.length+' 张纸条';
+for(const item of data){
+const card=document.createElement('article'), title=document.createElement('h3'), p=document.createElement('p'), button=document.createElement('button');
+card.className='paper-note';title.textContent=item.nickname+' · '+new Date(item.created_at).toLocaleString('zh-CN');p.textContent=item.content;
+button.className='button outline';button.textContent='删除纸条';button.onclick=async()=>{
+if(!confirm('确定删除 '+item.nickname+' 的这张纸条？删除后无法恢复。'))return;
+button.disabled=true;
+try{const {data:removed,error}=await db.rpc('jtw_remove_note',{note_id:item.id});if(error)throw error;card.remove();status.textContent=removed?'纸条已删除。':'这张纸条已经不在了。';}catch{status.textContent='删除失败，请重试。';button.disabled=false;}
+};card.append(title,p,button);notes.append(card);
+}
+}
+}
+}catch{status.textContent='无法载入管理页，请刷新或重新登录。';login.disabled=false;}
+}</script></body></html>
